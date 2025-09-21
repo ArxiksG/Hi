@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Flor Amarilla - Fases</title>
+    <style>
+        body {
+            /* Fondo degradado azul claro y crema */
+            background: linear-gradient(135deg, #e0f7fa 0%, #fffbe7 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        .pregunta, .resultado, .mensaje-aviso {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+        .visible {
+            display: flex;
+        }
+        /* Globo de texto para la pregunta */
+        .globo-pregunta {
+            background: #fffbe7;
+            color: #222;
+            padding: 22px 32px;
+            border-radius: 24px 24px 24px 8px;
+            box-shadow: 0 2px 16px rgba(224, 247, 250, 0.18);
+            margin-bottom: 24px;
+            position: relative;
+            font-size: 1.3em;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+        .globo-pregunta::after {
+            content: "";
+            position: absolute;
+            left: 24px;
+            bottom: -18px;
+            width: 24px;
+            height: 24px;
+            background: #fffbe7;
+            border-radius: 0 0 12px 12px;
+            transform: rotate(30deg);
+            box-shadow: 0 2px 8px rgba(224, 247, 250, 0.10);
+            z-index: 0;
+        }
+        .input-num {
+            font-size: 2.2em;
+            margin: 12px 0 18px 0;
+            width: 100px;
+            text-align: center;
+            border: none;
+            border-bottom: 2px solid #ffd700;
+            border-radius: 0;
+            background: transparent;
+            outline: none;
+            color: #222;
+            transition: border-color 0.2s;
+        }
+        .input-num:focus {
+            border-bottom: 2px solid #ffb300;
+        }
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(3, 56px);
+            gap: 12px;
+            margin-top: 0;
+        }
+        .numpad button {
+            font-size: 1.3em;
+            padding: 12px 0;
+            border: none;
+            border-radius: 12px;
+            background: #fffbe7;
+            color: #222;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+            transition: background 0.2s, color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .numpad button:hover {
+            background: #ffe066;
+            color: #bfa100;
+        }
+        .numpad button:active {
+            background: #ffd700;
+            color: #fff;
+        }
+        /* Botón OK: círculo verde con check */
+        .numpad .ok-btn {
+            background: #43d675 !important;
+            color: #fff;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            font-size: 1.5em;
+            box-shadow: 0 2px 8px rgba(67,214,117,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .numpad .ok-btn:hover {
+            background: #2ebd5b !important;
+        }
+        /* Botón borrar: círculo rojo con X */
+        .numpad .del-btn {
+            background: #e53935 !important;
+            color: #fff;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            font-size: 1.5em;
+            box-shadow: 0 2px 8px rgba(229,57,53,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .numpad .del-btn:hover {
+            background: #b71c1c !important;
+        }
+        .error {
+            color: #e53935;
+            margin-top: 14px;
+            font-size: 1em;
+            min-height: 24px;
+            letter-spacing: 0.5px;
+        }
+        .resultado {
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            top: 0; left: 0;
+            justify-content: center;
+            align-items: center;
+            background: url('fondo.png') center center/contain no-repeat, #fff;
+            animation: fadeIn 1.2s;
+            opacity: 1;
+            cursor: pointer;
+        }
+        .mensaje-aviso {
+            min-width: 280px;
+            min-height: 120px;
+            background: #fffbe7;
+            color: #222;
+            border-radius: 20px;
+            box-shadow: 0 2px 16px rgba(224, 247, 250, 0.18);
+            font-size: 1.3em;
+            font-weight: 400;
+            letter-spacing: 1px;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 36px 32px 24px 32px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            animation: fadeIn 0.7s;
+        }
+        .mensaje-aviso button {
+            margin-top: 22px;
+            padding: 8px 28px;
+            border-radius: 16px;
+            border: none;
+            background: #43d675;
+            color: #fff;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .mensaje-aviso button:hover {
+            background: #2ebd5b;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Fase 1: Pregunta y numpad -->
+    <div id="fase2" class="pregunta visible">
+        <div class="globo-pregunta">
+            ¿Cuál es mi edad?
+        </div>
+        <input type="text" id="respuesta" class="input-num" value="" readonly>
+        <div class="numpad">
+            <button onclick="agregarNumero('1')">1</button>
+            <button onclick="agregarNumero('2')">2</button>
+            <button onclick="agregarNumero('3')">3</button>
+            <button onclick="agregarNumero('4')">4</button>
+            <button onclick="agregarNumero('5')">5</button>
+            <button onclick="agregarNumero('6')">6</button>
+            <button onclick="agregarNumero('7')">7</button>
+            <button onclick="agregarNumero('8')">8</button>
+            <button onclick="agregarNumero('9')">9</button>
+            <button class="del-btn" onclick="borrarNumero()" title="Borrar">
+                <!-- Ícono X SVG -->
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                    <line x1="6" y1="6" x2="16" y2="16" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="16" y1="6" x2="6" y2="16" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+            <button onclick="agregarNumero('0')">0</button>
+            <button class="ok-btn" onclick="verificarRespuesta()" title="OK">
+                <!-- Ícono check SVG -->
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                    <polyline points="5,12 10,17 17,7" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+        <div id="error" class="error"></div>
+    </div>
+
+    <!-- Mensaje de aviso antes de la segunda fase -->
+    <div id="mensajeAviso" class="mensaje-aviso">
+        No golpes porque se enoja
+        <br>
+        <button onclick="continuarAFase2()">Continuar</button>
+    </div>
+
+    <!-- Fase 2: Resultado -->
+    <div id="fase3" class="resultado"></div>
+
+    <script>
+        // Mostrar mensaje de aviso antes de la segunda fase
+        let mostrarAviso = false;
+        function verificarRespuesta() {
+            const input = document.getElementById('respuesta').value;
+            const errorDiv = document.getElementById('error');
+            if (input === "18") {
+                document.getElementById('mensajeAviso').classList.add('visible');
+                document.getElementById('fase2').classList.remove('visible');
+                mostrarAviso = true;
+            } else {
+                errorDiv.textContent = "Respuesta incorrecta. Intenta de nuevo.";
+                document.getElementById('respuesta').value = '';
+            }
+        }
+
+        function continuarAFase2() {
+            document.getElementById('mensajeAviso').classList.remove('visible');
+            document.getElementById('fase3').classList.add('visible');
+        }
+
+        function agregarNumero(num) {
+            const input = document.getElementById('respuesta');
+            if (input.value.length < 2) { // Limita a 2 dígitos
+                input.value += num;
+            }
+        }
+
+        function borrarNumero() {
+            const input = document.getElementById('respuesta');
+            input.value = input.value.slice(0, -1);
+        }
+
+        // Cambiar fondo en la segunda fase al tocar/clickear
+        let fondoEstado = 1;
+        document.addEventListener('DOMContentLoaded', function() {
+            const fase3 = document.getElementById('fase3');
+            fase3.addEventListener('click', cambiarFondo);
+            fase3.addEventListener('touchstart', cambiarFondo);
+        });
+
+        function cambiarFondo() {
+            const fase3 = document.getElementById('fase3');
+            if (fondoEstado === 1) {
+                fase3.style.background = "url('fondo2.png') center center/contain no-repeat, #fff";
+                fondoEstado = 2;
+            } else if (fondoEstado === 2) {
+                fase3.style.background = "url('fondo3.png') center center/contain no-repeat, #fff";
+                fondoEstado = 3;
+            }
+            // Si ya está en fondo3, no cambia más
+        }
+    </script>
+</body>
+</html>
